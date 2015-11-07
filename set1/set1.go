@@ -1,4 +1,4 @@
-package hextobase64
+package set1
 
 import (
 	"encoding/base64"
