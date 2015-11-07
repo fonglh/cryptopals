@@ -34,3 +34,19 @@ func TestFixedXor(t *testing.T) {
 		}
 	}
 }
+
+func TestSingleByteXorCipher(t *testing.T) {
+	cases := []struct {
+		in, want string
+	}{
+		{"1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736",
+			"Cooking MC's like a pound of bacon"},
+	}
+
+	for _, c := range cases {
+		got := SingleByteXorCipher(c.in)
+		if got != c.want {
+			t.Errorf("SingleByteXorCipher(%q) == %q, want %q", c.in, got, c.want)
+		}
+	}
+}
