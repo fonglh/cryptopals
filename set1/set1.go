@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	"unicode"
 )
 
 func Hextobase64(s string) string {
@@ -24,13 +25,40 @@ func FixedXor(s1 string, s2 string) string {
 
 func SingleByteXorCipher(s string) string {
 	s_bytes, _ := hex.DecodeString(s)
-	var output []byte
+	var (
+		output       []byte
+		maxPlainText string
+		maxScore     int
+	)
+
 	for key := byte('A'); key <= byte('Z'); key++ {
 		output = output[:0]
-		for i := 0; i < len(s_bytes); i++ {
-			output = append(output, s_bytes[i]^key)
+		for _, element := range s_bytes {
+			output = append(output, element^key)
 		}
-		fmt.Println(string(output))
+		// check if current key gives a higher english plaintext score
+		if ScorePlainText(string(output)) > maxScore {
+			maxPlainText = string(output)
+			maxScore = ScorePlainText(maxPlainText)
+		}
 	}
-	return string(output)
+	fmt.Println(maxPlainText)
+	return maxPlainText
+}
+
+// return 0 is string is not ASCII nor printable
+// if it is, base score of 5
+// add 1 for each space
+func ScorePlainText(s string) int {
+	score := 5
+	for _, r := range s {
+		if r > unicode.MaxASCII || !unicode.IsPrint(r) {
+			score = 0
+			break
+		}
+		if r == ' ' {
+			score += 1
+		}
+	}
+	return score
 }
