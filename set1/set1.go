@@ -4,7 +4,8 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
-	"unicode"
+	"io/ioutil"
+	"strings"
 )
 
 func Hextobase64(s string) string {
@@ -29,36 +30,55 @@ func SingleByteXorCipher(s string) string {
 		output       []byte
 		maxPlainText string
 		maxScore     int
+		maxKey       string
 	)
 
-	for key := byte('A'); key <= byte('Z'); key++ {
+	for key := 0; key < 256; key++ {
 		output = output[:0]
 		for _, element := range s_bytes {
-			output = append(output, element^key)
+			output = append(output, element^byte(key))
 		}
+		score := ScorePlainText(string(output))
+
 		// check if current key gives a higher english plaintext score
-		if ScorePlainText(string(output)) > maxScore {
+		if score > maxScore {
 			maxPlainText = string(output)
 			maxScore = ScorePlainText(maxPlainText)
+			maxKey = string(key)
 		}
 	}
-	fmt.Println(maxPlainText)
+	fmt.Println(maxPlainText, maxScore, maxKey)
 	return maxPlainText
 }
 
-// return 0 is string is not ASCII nor printable
-// if it is, base score of 5
-// add 1 for each space
+// add 1 point for each space
 func ScorePlainText(s string) int {
-	score := 5
+	score := 0
 	for _, r := range s {
-		if r > unicode.MaxASCII || !unicode.IsPrint(r) {
-			score = 0
-			break
-		}
 		if r == ' ' {
 			score += 1
-		}
+		} /*else if r > unicode.MaxASCII || (!unicode.IsPrint(r) && (r != '\r' || r != '\n' || r != '\t')) {
+			score = 0
+			break
+		}*/
 	}
 	return score
+}
+
+// helper function to read file and return lines as array of strings
+func ReadStrings(filename string) ([]string, error) {
+	fileContents, err := ioutil.ReadFile(filename)
+	fileStrings := string(fileContents)
+	fileStringsArray := strings.Fields(fileStrings)
+	return fileStringsArray, err
+}
+
+// Answer is "Now that the party is jumping"
+// key is 53
+func SingleCharXor(filename string) string {
+	stringsArray, _ := ReadStrings(filename)
+	/*for _, str := range stringsArray {
+		SingleByteXorCipher(str)
+	}*/
+	return SingleByteXorCipher(stringsArray[170])
 }
