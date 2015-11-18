@@ -90,3 +90,13 @@ func SingleCharXor(filename string) string {
 	}
 	return maxPlaintext
 }
+
+func RepeatKeyXor(plaintext, key string) string {
+	var output []byte
+	var keyPtr int
+	for i, _ := range plaintext {
+		output = append(output, plaintext[i]^key[keyPtr])
+		keyPtr = (keyPtr + 1) % len(key)
+	}
+	return hex.EncodeToString(output)
+}
