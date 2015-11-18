@@ -60,7 +60,7 @@ func TestSingleCharXor(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := SingleCharXor("4.txt")
+		got := SingleCharXor(c.in)
 		if got != c.want {
 			t.Errorf("SingleCharXor(%q) == %q, want %q", c.in, got, c.want)
 		}
