@@ -3,9 +3,9 @@ package set1
 import (
 	"encoding/base64"
 	"encoding/hex"
-	"fmt"
 	"io/ioutil"
 	"strings"
+	"unicode"
 )
 
 func Hextobase64(s string) string {
@@ -54,12 +54,12 @@ func SingleByteXorCipher(s string) (string, int) {
 func ScorePlainText(s string) int {
 	score := 0
 	for _, r := range s {
-		if r == ' ' {
-			score += 1
-		} /*else if r > unicode.MaxASCII || (!unicode.IsPrint(r) && (r != '\r' || r != '\n' || r != '\t')) {
+		if r > unicode.MaxASCII {
 			score = 0
 			break
-		}*/
+		} else if r == ' ' {
+			score += 1
+		} /*else if r > unicode.MaxASCII /*|| (!unicode.IsPrint(r) && (r != '\r' || r != '\n' || r != '\t'))*/
 	}
 	return score
 }
