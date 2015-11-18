@@ -44,9 +44,25 @@ func TestSingleByteXorCipher(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := SingleByteXorCipher(c.in)
+		got, _ := SingleByteXorCipher(c.in)
 		if got != c.want {
 			t.Errorf("SingleByteXorCipher(%q) == %q, want %q", c.in, got, c.want)
+		}
+	}
+}
+
+func TestSingleCharXor(t *testing.T) {
+	cases := []struct {
+		in, want string
+	}{
+		{"4.txt",
+			"Now that the party is jumping\n"},
+	}
+
+	for _, c := range cases {
+		got := SingleCharXor("4.txt")
+		if got != c.want {
+			t.Errorf("SingleCharXor(%q) == %q, want %q", c.in, got, c.want)
 		}
 	}
 }
