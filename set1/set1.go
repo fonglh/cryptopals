@@ -91,12 +91,26 @@ func SingleCharXor(filename string) string {
 	return maxPlaintext
 }
 
-func RepeatKeyXor(plaintext, key string) string {
-	var output []byte
+// Abstract repeat key byte XOR so both encrypt and decrypt can use it
+func ByteRepeatKeyXor(input []byte, key string) (output []byte) {
 	var keyPtr int
-	for i, _ := range plaintext {
-		output = append(output, plaintext[i]^key[keyPtr])
+	for i := range input {
+		output = append(output, input[i]^key[keyPtr])
 		keyPtr = (keyPtr + 1) % len(key)
 	}
+	return
+}
+
+//Set 1 Challenge 5
+func RepeatKeyXor(plaintext, key string) string {
+	inputBytes := []byte(plaintext)
+	output := ByteRepeatKeyXor(inputBytes, key)
 	return hex.EncodeToString(output)
+}
+
+//Inverse of Set 1 Challenge 5
+func DecryptRepeatKeyXor(ciphertext, key string) string {
+	ciphertextBytes, _ := hex.DecodeString(ciphertext)
+	output := ByteRepeatKeyXor(ciphertextBytes, key)
+	return string(output)
 }
