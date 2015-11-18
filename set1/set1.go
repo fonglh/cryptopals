@@ -24,13 +24,13 @@ func FixedXor(s1 string, s2 string) string {
 	return hex.EncodeToString(xor_output)
 }
 
-func SingleByteXorCipher(s string) string {
+func SingleByteXorCipher(s string) (string, int) {
 	s_bytes, _ := hex.DecodeString(s)
 	var (
 		output       []byte
 		maxPlainText string
 		maxScore     int
-		maxKey       string
+	//	maxKey       string
 	)
 
 	for key := 0; key < 256; key++ {
@@ -44,11 +44,10 @@ func SingleByteXorCipher(s string) string {
 		if score > maxScore {
 			maxPlainText = string(output)
 			maxScore = ScorePlainText(maxPlainText)
-			maxKey = string(key)
+			//		maxKey = string(key)
 		}
 	}
-	fmt.Println(maxPlainText, maxScore, maxKey)
-	return maxPlainText
+	return maxPlainText, maxScore
 }
 
 // add 1 point for each space

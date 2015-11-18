@@ -44,7 +44,7 @@ func TestSingleByteXorCipher(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := SingleByteXorCipher(c.in)
+		got, _ := SingleByteXorCipher(c.in)
 		if got != c.want {
 			t.Errorf("SingleByteXorCipher(%q) == %q, want %q", c.in, got, c.want)
 		}
