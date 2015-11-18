@@ -73,11 +73,20 @@ func ReadStrings(filename string) ([]string, error) {
 }
 
 // Answer is "Now that the party is jumping"
-// key is 53
+// key is 53, in stringsArray[170]
 func SingleCharXor(filename string) string {
 	stringsArray, _ := ReadStrings(filename)
-	/*for _, str := range stringsArray {
-		SingleByteXorCipher(str)
-	}*/
-	return SingleByteXorCipher(stringsArray[170])
+	var (
+		maxScore     int
+		maxPlaintext string
+	)
+
+	for _, str := range stringsArray {
+		plaintext, score := SingleByteXorCipher(str)
+		if score > maxScore {
+			maxScore = score
+			maxPlaintext = plaintext
+		}
+	}
+	return maxPlaintext
 }
