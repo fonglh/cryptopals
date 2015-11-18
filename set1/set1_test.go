@@ -66,3 +66,19 @@ func TestSingleCharXor(t *testing.T) {
 		}
 	}
 }
+
+func TestRepeatingKeyXor(t *testing.T) {
+	cases := []struct {
+		plaintext, key, ciphertext string
+	}{
+		{"Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal", "ICE",
+			"0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f"},
+	}
+
+	for _, c := range cases {
+		got := RepeatKeyXor(c.plaintext, c.key)
+		if got != c.ciphertext {
+			t.Errorf("RepeatKeyXor(%q, %q) == %q, want %q", c.plaintext, c.key, got, c.ciphertext)
+		}
+	}
+}
