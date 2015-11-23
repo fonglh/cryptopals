@@ -101,16 +101,42 @@ func ByteRepeatKeyXor(input []byte, key string) (output []byte) {
 	return
 }
 
-//Set 1 Challenge 5
+// Set 1 Challenge 5
 func RepeatKeyXor(plaintext, key string) string {
 	inputBytes := []byte(plaintext)
 	output := ByteRepeatKeyXor(inputBytes, key)
 	return hex.EncodeToString(output)
 }
 
-//Inverse of Set 1 Challenge 5
+// Inverse of Set 1 Challenge 5
 func DecryptRepeatKeyXor(ciphertext, key string) string {
 	ciphertextBytes, _ := hex.DecodeString(ciphertext)
 	output := ByteRepeatKeyXor(ciphertextBytes, key)
 	return string(output)
+}
+
+// Calculate Hamming Distance (number of differing bits) between 2 strings of equal length
+func HammingDistance(s1, s2 string) (result int) {
+	for i := range s1 {
+		diffBits := s1[i] ^ s2[i]
+
+		/* my original version
+		// when byte overflows, it becomes 0
+		var mask byte
+		for mask = 1; mask > 0; mask = mask << 1 {
+			if (mask & diffBits) != 0 {
+				result++
+			}
+		}
+		*/
+
+		// an algo of Wegner (1960) found on wikipedia
+		// repeatedly finds and clears the lowest-order nonzero bit
+		for diffBits != 0 {
+			result++
+			diffBits &= diffBits - 1
+		}
+	}
+
+	return
 }
