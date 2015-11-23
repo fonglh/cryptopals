@@ -115,7 +115,18 @@ func DecryptRepeatKeyXor(ciphertext, key string) string {
 	return string(output)
 }
 
-// Calculate Hamming Distance (number of differing bits) between 2 strings
+// Calculate Hamming Distance (number of differing bits) between 2 strings of equal length
 func HammingDistance(s1, s2 string) (result int) {
+	for i := range s1 {
+		diffBits := s1[i] ^ s2[i]
+		var mask byte
+		// when byte overflows, it becomes 0
+		for mask = 1; mask > 0; mask = mask << 1 {
+			if (mask & diffBits) != 0 {
+				result++
+			}
+		}
+	}
+
 	return
 }
