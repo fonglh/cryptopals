@@ -119,12 +119,22 @@ func DecryptRepeatKeyXor(ciphertext, key string) string {
 func HammingDistance(s1, s2 string) (result int) {
 	for i := range s1 {
 		diffBits := s1[i] ^ s2[i]
-		var mask byte
+
+		/* my original version
 		// when byte overflows, it becomes 0
+		var mask byte
 		for mask = 1; mask > 0; mask = mask << 1 {
 			if (mask & diffBits) != 0 {
 				result++
 			}
+		}
+		*/
+
+		// an algo of Wegner (1960) found on wikipedia
+		// repeatedly finds and clears the lowest-order nonzero bit
+		for diffBits != 0 {
+			result++
+			diffBits &= diffBits - 1
 		}
 	}
 
