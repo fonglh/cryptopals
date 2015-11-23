@@ -98,3 +98,20 @@ func TestDecryptRepeatingKeyXor(t *testing.T) {
 		}
 	}
 }
+
+func TestHammingDistance(t *testing.T) {
+	cases := []struct {
+		s1, s2 string
+		result int
+	}{
+		{"this is a test", "wokka wokka!!!",
+			37},
+	}
+
+	for _, c := range cases {
+		got := HammingDistance(c.s1, c.s2)
+		if got != c.result {
+			t.Errorf("HammingDistance(%q, %q) == %d, want %d", c.s1, c.s2, got, c.result)
+		}
+	}
+}
