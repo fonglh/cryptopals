@@ -4,8 +4,8 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"io/ioutil"
+	"sort"
 	"strings"
 	"unicode"
 )
@@ -79,6 +79,30 @@ func ScorePlainText(s string) (score int) {
 		letterCounts[ch]++
 	}
 	return
+}
+
+// Data structure to hold key/value pair
+type Pair struct {
+	Key   rune
+	Value int
+}
+
+type PairList []Pair
+
+func (p PairList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+func (p PairList) Len() int           { return len(p) }
+func (p PairList) Less(i, j int) bool { return p[i].Value < p[j].Value }
+
+// function to convert map to pairlist, then sort and return it
+func SortMapByReverseValue(m map[rune]int) PairList {
+	p := make(PairList, len(m))
+	i := 0
+	for k, v := range m {
+		p[i] = Pair{k, v}
+		i++
+	}
+	sort.Sort(sort.Reverse(p))
+	return p
 }
 
 func CountLetters(s string) (map[rune]int, error) {
