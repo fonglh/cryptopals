@@ -3,6 +3,8 @@ package set1
 import (
 	"encoding/base64"
 	"encoding/hex"
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"strings"
 	"unicode"
@@ -33,7 +35,7 @@ func SingleByteXorCipher(s string) (string, int) {
 	//	maxKey       string
 	)
 
-	for key := 0; key < 256; key++ {
+	for key := 65; key < 90; key++ {
 		output = output[:0]
 		for _, element := range s_bytes {
 			output = append(output, element^byte(key))
@@ -51,17 +53,47 @@ func SingleByteXorCipher(s string) (string, int) {
 }
 
 // add 1 point for each space
-func ScorePlainText(s string) int {
-	score := 0
-	for _, r := range s {
-		if r > unicode.MaxASCII {
-			score = 0
-			break
-		} else if r == ' ' {
-			score += 1
-		} /*else if r > unicode.MaxASCII /*|| (!unicode.IsPrint(r) && (r != '\r' || r != '\n' || r != '\t'))*/
+/*func ScorePlainText(s string) int {
+score := 0
+for _, r := range s {
+	if r > unicode.MaxASCII {
+		score = 0
+		break
+	} else if r == ' ' {
+		score += 1
+	} /*else if r > unicode.MaxASCII /*|| (!unicode.IsPrint(r) && (r != '\r' || r != '\n' || r != '\t'))*/
+/*
 	}
 	return score
+}*/
+
+func ScorePlainText(s string) (score int) {
+	letterCounts, err := CountLetters(s)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	for ch := 'A'; ch <= 'Z'; ch++ {
+		//		fmt.Println(ch, letterCounts[ch])
+		letterCounts[ch]++
+	}
+	return
+}
+
+func CountLetters(s string) (map[rune]int, error) {
+	letterCounts := make(map[rune]int)
+	for ch := 'A'; ch <= 'Z'; ch++ {
+		letterCounts[ch] = 0
+	}
+	for _, ch := range strings.ToUpper(s) {
+		if ch > unicode.MaxASCII {
+			return nil, errors.New("Non ASCII char in string")
+		} else if ch >= 'A' && ch <= 'Z' {
+			letterCounts[ch]++
+		}
+	}
+	return letterCounts, nil
 }
 
 // helper function to read file and return lines as array of strings
