@@ -53,6 +53,8 @@ func SingleByteXorCipher(s string) (string, int) {
 }
 
 func ScorePlainText(s string) (score int) {
+	const MOST string = "ETAOIN"
+	const LEAST string = "VKJXQZ"
 	letterCounts, err := CountLetters(s)
 	if err != nil {
 		return
@@ -63,12 +65,15 @@ func ScorePlainText(s string) (score int) {
 	// if 1st 6 elements contain ETAOIN, add 1
 	// these are the 6 most common english letters
 	for i := 0; i < 6; i++ {
-		if pl[i].Key == 'E' ||
-			pl[i].Key == 'T' ||
-			pl[i].Key == 'A' ||
-			pl[i].Key == 'O' ||
-			pl[i].Key == 'I' ||
-			pl[i].Key == 'N' {
+		if strings.Index(MOST, string(pl[i].Key)) != -1 {
+			score++
+		}
+	}
+
+	// if last 6 elements contain VKJXQZ, add 1
+	// these are the 6 least common english letters
+	for i := 20; i < 26; i++ {
+		if strings.Index(LEAST, string(pl[i].Key)) != -1 {
 			score++
 		}
 	}
@@ -83,9 +88,20 @@ type Pair struct {
 
 type PairList []Pair
 
-func (p PairList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
-func (p PairList) Len() int           { return len(p) }
-func (p PairList) Less(i, j int) bool { return p[i].Value < p[j].Value }
+func (p PairList) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
+func (p PairList) Len() int      { return len(p) }
+func (p PairList) Less(i, j int) bool {
+	// Sequence of letters from most to least frequent
+	const ETAOIN string = "ETAOINSHRDLCUMWFGYPBVKJXQZ"
+	if p[i].Value != p[j].Value {
+		return p[i].Value < p[j].Value
+	} else {
+		// Check which comes first in ETAOIN string
+		i_index := strings.Index(ETAOIN, string(p[i].Key))
+		j_index := strings.Index(ETAOIN, string(p[j].Key))
+		return i_index < j_index
+	}
+}
 
 // function to convert map to pairlist, then sort and return it
 func SortMapByReverseValue(m map[rune]int) PairList {
