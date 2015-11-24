@@ -3,7 +3,9 @@ package set1
 import (
 	"encoding/base64"
 	"encoding/hex"
+	"errors"
 	"io/ioutil"
+	"sort"
 	"strings"
 	"unicode"
 )
@@ -50,18 +52,84 @@ func SingleByteXorCipher(s string) (string, int) {
 	return maxPlainText, maxScore
 }
 
-// add 1 point for each space
-func ScorePlainText(s string) int {
-	score := 0
-	for _, r := range s {
-		if r > unicode.MaxASCII {
-			score = 0
-			break
-		} else if r == ' ' {
-			score += 1
-		} /*else if r > unicode.MaxASCII /*|| (!unicode.IsPrint(r) && (r != '\r' || r != '\n' || r != '\t'))*/
+func ScorePlainText(s string) (score int) {
+	const MOST string = "ETAOIN"
+	const LEAST string = "VKJXQZ"
+	letterCounts, err := CountLetters(s)
+	if err != nil {
+		return
 	}
-	return score
+
+	pl := SortMapByReverseValue(letterCounts)
+
+	// if 1st 6 elements contain ETAOIN, add 1
+	// these are the 6 most common english letters
+	for i := 0; i < 6; i++ {
+		if strings.Index(MOST, string(pl[i].Key)) != -1 {
+			score++
+		}
+	}
+
+	// if last 6 elements contain VKJXQZ, add 1
+	// these are the 6 least common english letters
+	for i := 20; i < 26; i++ {
+		if strings.Index(LEAST, string(pl[i].Key)) != -1 {
+			score++
+		}
+	}
+	return
+}
+
+// Data structure to hold key/value pair
+type Pair struct {
+	Key   rune
+	Value int
+}
+
+type PairList []Pair
+
+func (p PairList) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
+func (p PairList) Len() int      { return len(p) }
+func (p PairList) Less(i, j int) bool {
+	// Sequence of letters from most to least frequent
+	const ETAOIN string = "ETAOINSHRDLCUMWFGYPBVKJXQZ"
+	if p[i].Value != p[j].Value {
+		return p[i].Value < p[j].Value
+	} else {
+		// Check which comes first in ETAOIN string
+		i_index := strings.Index(ETAOIN, string(p[i].Key))
+		j_index := strings.Index(ETAOIN, string(p[j].Key))
+		return i_index < j_index
+	}
+}
+
+// function to convert map to pairlist, then sort and return it
+func SortMapByReverseValue(m map[rune]int) PairList {
+	p := make(PairList, len(m))
+	i := 0
+	for k, v := range m {
+		p[i] = Pair{k, v}
+		i++
+	}
+	sort.Sort(sort.Reverse(p))
+	return p
+}
+
+func CountLetters(s string) (map[rune]int, error) {
+	letterCounts := make(map[rune]int)
+	for ch := 'A'; ch <= 'Z'; ch++ {
+		letterCounts[ch] = 0
+	}
+	for _, ch := range strings.ToUpper(s) {
+		if ch > unicode.MaxASCII {
+			return nil, errors.New("Non ASCII char in string")
+		} else if !unicode.IsSpace(ch) && !unicode.IsPrint(ch) {
+			return nil, errors.New("Not a space and not printable")
+		} else if ch >= 'A' && ch <= 'Z' {
+			letterCounts[ch]++
+		}
+	}
+	return letterCounts, nil
 }
 
 // helper function to read file and return lines as array of strings
